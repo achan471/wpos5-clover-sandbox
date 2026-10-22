@@ -15,7 +15,7 @@
   <h1>Clover sandbox launch</h1>
   <p>This page is a placeholder for the manual wpos5 OAuth prototype. On the Windows machine running the probe:</p>
   <ol>
-    <li>Run <code>clover_probe oauth-start APP_ID REDIRECT_URI oauth.session</code>, using this site's <code>callback/</code> URL as <code>REDIRECT_URI</code>.</li>
+    <li>Run <code>clover_probe oauth-start APP_ID https://achan471.github.io/wpos5-clover-sandbox/callback/ oauth.session</code>, replacing <code>APP_ID</code> with your sandbox app ID.</li>
     <li>Open the Authorize URL printed by the probe and approve access for your test merchant.</li>
     <li>Copy the full URL shown on the callback page into <code>clover_probe oauth-finish oauth.session</code>.</li>
   </ol>
