@@ -1,0 +1,65 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="referrer" content="no-referrer">
+  <title>Clover sandbox OAuth callback</title>
+  <style>
+    body { font: 1rem/1.5 system-ui, sans-serif; max-width: 42rem; margin: 3rem auto; padding: 0 1rem; color: #17212b; }
+    textarea { box-sizing: border-box; width: 100%; min-height: 8rem; padding: .75rem; font: .9rem/1.4 ui-monospace, monospace; overflow-wrap: anywhere; }
+    button { background: #238b45; color: white; border: 0; border-radius: .25rem; padding: .7rem 1rem; cursor: pointer; }
+    button:disabled { background: #8b958e; cursor: default; }
+    .note { background: #fff5df; border-left: 4px solid #b57800; padding: 1rem; }
+  </style>
+</head>
+<body>
+  <h1>Clover sandbox OAuth callback</h1>
+  <p id="status" role="status">Checking the authorization response…</p>
+  <label for="callback-url">Full callback URL</label>
+  <textarea id="callback-url" readonly spellcheck="false" aria-describedby="security-note"></textarea>
+  <p><button id="copy" type="button" disabled>Copy URL</button></p>
+  <p id="security-note" class="note">Treat this URL as temporary sensitive data. Paste it only into your local <code>clover_probe oauth-finish</code> prompt. This page does not exchange the code or store tokens.</p>
+  <script>
+    (function () {
+      "use strict";
+      var responseUrl = window.location.href;
+      var params = new URL(responseUrl).searchParams;
+      var field = document.getElementById("callback-url");
+      var status = document.getElementById("status");
+      var button = document.getElementById("copy");
+
+      if (params.has("code") && params.has("state")) {
+        field.value = responseUrl;
+        status.textContent = "Authorization returned a code. Copy the full URL below into the probe.";
+      } else if (params.has("error")) {
+        field.value = responseUrl;
+        status.textContent = "Clover returned an OAuth error. Check the URL and your app configuration; oauth-finish requires a code and state.";
+      } else {
+        status.textContent = "No OAuth response is present. Start oauth-start locally and open its Authorize URL.";
+      }
+
+      if (field.value) {
+        button.disabled = false;
+        // Keep the one-time code out of the visible address bar after capturing it.
+        window.history.replaceState(null, "", window.location.pathname);
+      }
+
+      button.addEventListener("click", function () {
+        if (!field.value) return;
+        if (navigator.clipboard && navigator.clipboard.writeText) {
+          navigator.clipboard.writeText(field.value).then(function () {
+            button.textContent = "Copied";
+          }, function () {
+            field.select();
+            button.textContent = "Select and copy the URL";
+          });
+        } else {
+          field.select();
+          button.textContent = "Select and copy the URL";
+        }
+      });
+    }());
+  </script>
+</body>
+</html>
